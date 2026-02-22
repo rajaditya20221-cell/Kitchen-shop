@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitchenary | Premium Cookware</title>
+    <style>
+        /* --- CSS STYLES --- */
+        :root {
+            --primary: #ff6b6b;
+            --dark: #2d3436;
+            --light: #f9f9f9;
+            --white: #ffffff;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+        }
+
+        /* Header */
+        header {
+            background: var(--white);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .cart-icon {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1556910103-1c02745a30bf?auto=format&fit=crop&w=1500&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+
+        .hero h1 { font-size: 3rem; margin-bottom: 1rem; }
+        .hero p { font-size: 1.2rem; margin-bottom: 2rem; }
+        
+        .btn {
+            padding: 10px 25px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .btn:hover { background: #ee5253; }
+
+        /* Product Grid */
+        .container {
+            padding: 2rem 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-img {
+            width: 100%;
+            height: 200px;
+            background-color: #ddd;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .price {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 0.5rem 0;
+        }
+
+        /* Cart Modal */
+        .cart-modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 350px;
+            height: 100%;
+            background: var(--white);
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            z-index: 200;
+            padding: 2rem;
+            flex-direction: column;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+
+        .close-cart {
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .cart-items {
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        .cart-total {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: right;
+            border-top: 2px solid var(--dark);
+            padding-top: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">Kitchenary</div>
+        <div class="cart-icon" onclick="toggleCart()">
+            🛒 Cart
+            <span class="cart-count" id="cartCount">0</span>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div>
+            <h1>Upgrade Your Cooking</h1>
+            <p>High-quality kitchen tools for professional chefs and home cooks.</p>
+            <button class="btn" onclick="document.getElementById('products').scrollIntoView()">Shop Now</button>
+        </div>
+    </section>
+
+    <!-- Product Section -->
+    <div class="container" id="products">
+        <h2 class="section-title">Featured Items</h2>
+        <div class="product-grid" id="productGrid">
+            <!-- Products will be injected here by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+            <span class="close-cart" onclick="toggleCart()">&times;</span>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <p>Your cart is empty.</p>
+        </div>
+        <div class="cart-total">
+            Total: $<span id="totalPrice">0</span>
+        </div>
+        <button class="btn" style="width: 100%; margin-top: 1rem;" onclick="checkout()">Checkout</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2023 Kitchenary. Demo Website.</p>
+    </footer>
+
+    <script>
+        /* --- JAVASCRIPT LOGIC --- */
+
+        // 1. Product Data (Simulating a database)
+        const products = [
+            {
+                id: 1,
+                name: "Professional Chef Knife",
+                price: 49.99,
+                image: "https://images.unsplash.com/photo-1593618998160-e34014e67546?auto=format&fit=crop&w=400&q=80"
+            },
+            {
+                id: 2,
+                name: "Non-Stick Frying Pan",
+                price: 29.99,
+                image: "https://images.unsplash.com/photo-1585667434540-5c3a4f2031d5?auto=format&fit=crop&w=400&q=80"
+            },
+            {
+                id: 3,
+                name: "Wooden Cutting Board",
+                price: 19.99,
+                image: "https://images.unsplash.com/photo-1626202269240-218d6072918c?auto=format&fit=crop&w=400&q=80"
+            },
+            {
+                id: 4,
+                name: "Stand Mixer Pro",
+                price: 199.99,
+                image: "https://images.unsplash.com/photo-1594385208974-2e75f8d7bb48?auto=format&fit=crop&w=400&q=80"
+            },
+            {
+                id: 5,
+                name: "Blender 5000",
+                price: 89.99,
+                image: "https://images.unsplash.com/photo-1570222094114-28a9d88a2ef5?auto=format&fit=crop&w=400&q=80"
+            },
+            {
+                id: 6,
+                name: "Stainless Steel Pot",
+                price: 35.50,
+                image: "https://images.unsplash.com/photo-1585672833506-378748d1c619?auto=format&fit=crop&w=400&q=80"
+            }
+        ];
+
+        // 2. Cart State
+        let cart = [];
+
+        // 3. Render Products to the DOM
+        const productGrid = document.getElementById('productGrid');
+        
+        function renderProducts() {
+            productGrid.innerHTML = products.map(product => `
+                <div class="product-card">
+                    <img src="${product.image}" alt="${product.name}" class="product-img">
+                    <div class="product-info">
+                        <h3>${product.name}</h3>
+                        <p class="price">$${product.price.toFixed(2)}</p>
+                        <button class="btn" onclick="addToCart(${product.id})">Add to Cart</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 4. Add Item to Cart
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            cart.push(product);
+            updateCartUI();
+            alert(`${product.name} added to cart!`);
+        }
+
+        // 5. Update Cart UI (Count and List)
+        function updateCartUI() {
+            // Update Count Badge
+            document.getElementById('cartCount').innerText = cart.length;
+
+            // Update Cart Items List
+            const cartItemsContainer = document.getElementById('cartItems');
+            const totalPriceElement = document.getElementById('totalPrice');
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
+                totalPriceElement.innerText = '0';
+            } else {
+                // Calculate Total
+                const total = cart.reduce((sum, item) => sum + item.price, 0);
+                totalPriceElement.innerText = total.toFixed(2);
+
+                // Render List
+                cartItemsContainer.innerHTML = cart.map((item, index) => `
+                    <div class="cart-item">
+                        <div>
+                            <strong>${item.name}</strong><br>
+                            <small>$${item.price.toFixed(2)}</small>
+                        </div>
+                        <button onclick="removeFromCart(${index})" style="color:red; border:none; background:none; cursor:pointer;">&times;</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // 6. Remove Item from Cart
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        // 7. Toggle Cart Modal
+        function toggleCart() {
+            const modal = document.getElementById('cartModal');
+            if (modal.style.display === 'flex') {
+                modal.style.display = 'none';
+            } else {
+                modal.style.display = 'flex';
+            }
+        }
+
+        // 8. Checkout Simulation
+        function checkout() {
+            if (cart.length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
+            alert("Thank you for your purchase! Total: $" + document.getElementById('totalPrice').innerText);
+            cart = [];
+            updateCartUI();
+            toggleCart();
+        }
+
+        // Initialize
+        renderProducts();
+
+    </script>
+</body>
+</html>
